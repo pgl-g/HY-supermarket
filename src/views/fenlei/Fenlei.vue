@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import NavBar from 'components/comment/navbar/NavBar'
+import NavBar from '../../components/comment/navbar/NavBar'
 export default {
     name:'Fenlei',
     data(){

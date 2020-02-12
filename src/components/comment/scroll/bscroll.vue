@@ -32,6 +32,7 @@ export default {
             probeType:this.probeType,
             pullUpLoad: true
         })  
+        // 这是滚动条的一些滚动高度事件
        this.scroll.on('scroll',(position) => {
            /* console.log(position) */
            this.$emit('scroll',position)
@@ -48,7 +49,7 @@ export default {
             this.scroll.finishPullUp();
         },
         refresh(){
-           this.scroll && this.scroll.refresh()
+           this.scroll && this.scroll.refresh && this.scroll.refresh()
         }
     }
 }

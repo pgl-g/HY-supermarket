@@ -5,7 +5,7 @@ const Home = () => import('../views/home/Home.vue')
 const Fenlei = () => import('../views/fenlei/Fenlei.vue')
 const Shop = () => import('../views/shop/Shop.vue')
 const Mine = () => import('../views/mine/Mine.vue')
-const Detel = () => import('../views/detel/Detel.vue')
+const Detail = () => import('../views/detel/Detail.vue')
 
 Vue.use(VueRouter)
 
@@ -31,13 +31,13 @@ const routes = [
     component:Mine
   },
   {
-    path:'/detel/:iid',
-    component:Detel
+    path:'/detail/:iid',
+    component:Detail
   }
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  // mode: 'history', 这个是要开服务器的
   base: process.env.BASE_URL,
   routes
 })

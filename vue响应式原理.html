@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue响应式原理</title>
+  </head>
+  <body>
+    <!-- 
+        1.app.message修改数据，vue内部式如何监听message数据的改变的
+        Object.defineProperty -> 监听对象属性的改变
+
+
+        2.当数据发生改变，Vue是如何知道要通知哪些人，界面发生刷新
+            *发布订阅者模式
+     -->
+    <div id="app">
+      {{message}} {{message}} {{message}} {{name}}
+    </div>
+    <script>
+      const obj = {
+        message: "哈哈",
+        name: "why"
+      };
+      Object.keys(obj).forEach(key => {
+        let value = obj[key];
+        Object.defineProperty(obj, key, {
+          set(newvalue) {
+            console.log("监听" + key + "改变");
+            // 告诉谁了？谁用告诉谁了？谁在用？
+            // 根据解析html代码，获取到那些人有用属性
+            // 假设：张三/李四/王五用了 来订阅set的改变
+            value = newvalue;
+            // notify通知的意思
+            dep.notify()
+          },
+          get() {
+            console.log("获取" + key + "对应的值");
+            // 张三:get -> update
+            // 李四:get -> update
+            // 王五:get -> update
+            return value;
+          }
+        });
+      });
+
+      // 发布者订阅者模式
+
+      // dep:发布者模式
+      class Dep {
+        constructor() {
+          // subscribe订阅的意思   这是记录谁在用set这个属性的
+          this.subs = [];
+        }
+
+
+        addSub(watcher){
+            this.subs.push(watcher)
+        }
+
+
+        notify(){
+            this.subs.forEach(item=>{
+                item.update()
+            })
+        }
+      }
+      // 订阅者模式
+      class Watcher{
+          constructor(name){
+            this.name = name
+          }
+          update(){
+              console.log(this.name + '发生update')
+          }
+      }
+      const dep = new Dep();
+      const w1 = new Watcher('张三')
+      dep.addSub(w1)
+      const w2 = new Watcher('李四')
+      dep.addSub(w2)
+      const w3 = new Watcher('王五')
+      dep.addSub(w3)
+      dep.notify()
+    </script>
+    <script src="./node_modules/vue/dist/vue.js"></script>
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          message: "张三",
+          name: "why"
+        }
+      });
+    </script>
+  </body>
+</html>

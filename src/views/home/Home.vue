@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import NavBar from "components/comment/navbar/NavBar";
+import NavBar from "../../components/comment/navbar/NavBar";
 /* 轮播图 */
 import HomeSwiper from "./children/HomeSwiper";
 /* 详情页 */
@@ -49,17 +49,19 @@ import Homerecommend from "./children/Homerecommend";
 /* 特色内容 */
 import feature from "./children/feature";
 /* 导航控制 */
-import tabControl from "components/content/tabControl/tabControl";
+import tabControl from "../../components/content/tabControl/tabControl";
 /* 数据懒加载的实现 */
-import Goods from "components/content/goods/Goods";
+import Goods from "../../components/content/goods/Goods";
 /* 滚动条设置 */
-import bscroll from 'components/comment/scroll/bscroll'
+import bscroll from '../../components/comment/scroll/bscroll'
 /* 回到顶部的组件 */
-import BackTop from 'components/content/backTop/backTop'
+import BackTop from '../../components/content/backTop/backTop'
 /* 网络请求 */
-import { gethomeDate, getGoodsdata } from "network/home"; 
-
-
+import { gethomeDate, getGoodsdata } from "../../network/home"; 
+// 防抖事件
+import {debounce} from '../../common/debounce'
+// 混入mixin
+import {ItemimgLisenter} from '../../common/mixin'
 
 export default {
   name: "Home",
@@ -73,6 +75,7 @@ export default {
     bscroll,
     BackTop
   },
+  mixins:[ItemimgLisenter],
   data() {
     return {
       banners: [],
@@ -86,16 +89,21 @@ export default {
       isshow:false,
       TaboffsetTop:0,
       isoffsetTtopfixed:false,
-      active:0
+      active:0,
+      Imageload:null
     };
   },
-   // 保留之前刷新的状态
+   
    activated(){
+     // 保留之前刷新的状态 
       this.$refs.scroll.scroll.scrollTo(0,this.active)
       this.$refs.scroll.refresh()
     },
     deactivated(){
+      // 保存销毁之前的状态的y值
       this.active = this.$refs.scroll.scroll.y
+      // console.log(this.active)
+      this.$bus.$off('imgload',this.Imageload)
     },
   created() {
     // 1. 请求多个数据
@@ -109,12 +117,7 @@ export default {
    
   },
   mounted(){
-    const refresh = this.debounce(this.$refs.scroll.refresh,200)
-    // 刷新图片的加载事件
-    this.$bus.$on('imgload',() => {
-      refresh();
-    })
- 
+    this.tabClick(0)
   },
   methods: {
 
@@ -123,16 +126,7 @@ export default {
     imgloaditem(){
     this.TaboffsetTop = this.$refs.tabcontrol2.$el.offsetTop
     },
-    // 防抖动事件包装
-    debounce(func, delay){
-      let timer = null
-      return function (...args) {
-        if(timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-          func.apply(this,args)
-        },delay)
-      }
-    },
+    
 
     // 点击切换控制
     tabClick(index) {
@@ -182,7 +176,7 @@ export default {
     getGoodsdata(type) {
       const page = this.goods[type].page + 1;
       getGoodsdata(type, page).then(res => {
-/*         console.log(res); */
+        // console.log(res); 
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
 

@@ -1,7 +1,7 @@
 <template>
     <div>   
-        <navbar>
-            <div slot="left" class="detel-left">
+        <navbar class="navbar">
+            <div slot="left" class="detel-left" @click="tohome">
              <img src="../../../assets/img/common/fanhui.png" alt="">
            </div>
            <div slot="center" class="detel-navbar">
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import navbar from 'components/comment/navbar/NavBar'
+import navbar from '../../../components/comment/navbar/NavBar'
 export default {
     name:'DetelNavbar',
     components:{
@@ -31,15 +31,25 @@ export default {
     methods:{
         navClick(index){
             this.make = index
+            this.$emit('ImgTopY',index)
+            },
+        tohome(){
+                this.$router.push({
+                    path:'/home'
+                })
             }
     }
 }
 </script>
 
 <style scoped>
+.navbar{
+    background: #ffffff;
+}
 .detel-navbar{
     display: flex;
     justify-content: space-around;
+    
     }
     .active{
         color: pink;
